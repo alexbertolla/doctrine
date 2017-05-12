@@ -36,7 +36,7 @@ $annotationDriver = new Doctrine\ORM\Mapping\Driver\AnnotationDriver(
 );
 // NOTE: driver for application Entity can be different, Yaml, Xml or whatever
 // register annotation driver for our application Entity namespace
-$driverChain->addDriver($annotationDriver, 'SON');
+$driverChain->addDriver($annotationDriver, 'code');
 
 $config = new Doctrine\ORM\Configuration;
 $config->setProxyDir('/tmp');
@@ -71,17 +71,4 @@ $em = EntityManager::create(
             'dbname' => 'doctrine',
                 ), $config, $evm
 );
-
-$app = new \Silex\Application();
-$app['debug'] = TRUE;
-
-
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__ . '/../view',
-));
-
-$app->register(new Silex\Provider\RoutingServiceProvider());
-
-
-//$em->flush($entity)
 
