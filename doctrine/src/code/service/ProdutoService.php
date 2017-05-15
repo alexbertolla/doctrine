@@ -9,7 +9,7 @@
 namespace code\service;
 
 use code\entity\Produto;
-use code\mapper\ProdutoMapper;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Description of ProdutoService
@@ -18,39 +18,47 @@ use code\mapper\ProdutoMapper;
  */
 class ProdutoService {
 
-    private $produto;
-    private $mapper;
+    private $em;
 
-    public function __construct(Produto $produto, ProdutoMapper $mapper) {
-        $this->produto = $produto;
-        $this->mapper = $mapper;
+    public function __construct(EntityManager $em) {
+        $this->em = $em;
     }
 
     public function inserirProduto(Produto $produto) {
-        $result = $this->mapper->inserirProduto($produto);
+        $result = $this->em->persist($produto);
         $retorno['mensagem'] = ($result) ? 'Dados inseridos com sucesso' : 'Erro ao inserir dados';
         return $retorno;
     }
 
     public function alterarProduto(Produto $produto) {
-        $result = $this->mapper->alterarProduto($produto);
+        $produtoReference = $this->em->getReference(Produto::class, $produto->getId());
+        $result = $this->em->merge($produtoReference);
+        $this->em->flush();
         $retorno['mensagem'] = ($result) ? 'Dados alterados com sucesso' : 'Erro ao alterar dados';
         return $retorno;
     }
 
     public function excluirProduto(Produto $produto) {
-        $result = $this->mapper->excluirProduto($produto);
+        $produtoReference = $this->em->getReference(Produto::class, $produto->getId());
+        $result = $this->em->detach($produtoReference);
         $retorno['mensagem'] = ($result) ? 'Dados excluídos com sucesso' : 'Erro ao excluir dados';
         return $retorno;
     }
 
     public function buscarPorId($id) {
-        return $this->mapper->buscarPorId($id);
+        return $this->em->getRepository(Produto::class)->find($id);
     }
 
     public function listarProdutos() {
-        $produtoMapper = new ProdutoMapper();
-        return $produtoMapper->listarProdutos();
+        return $this->em->getRepository(Produto::class)->findAll();
+    }
+
+    public function listaPaginada($inicio, $maximo) {
+        return $this->em->getRepository(Produto::class)->getListaPaginada($inicio, $maximo);
+    }
+
+    public function procurarPorNome($nome) {
+        return $this->em->getRepository(Produto::class)->procurarPorNome($nome);
     }
 
     public function criarTabela($arrayProdutos) {

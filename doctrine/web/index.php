@@ -1,10 +1,14 @@
 <?php
 
 /**
- * Agora que você já possui uma API pública de seu projeto com Silex, 
- * faça uma mudança em seu projeto (da forma mais sutil possível),
- *  para alterar o formato atual para persistir os dados no banco de dados 
- * com o Doctrine nas condições de Adicionar, Alterar e Remover um registro.
+ * - Faça uma refatoração completa no sistema para utilizar adequadamente a 
+ * persistência de dados (incluindo a utilização do getReference).
+
+  - Crie um sistema de busca utilizando repositories sendo que os métodos podem
+ *  utilizar queryBuilder ou DQL.
+
+  - Faça a listagem de dados utilizando paginação (os parâmetros podem ser
+ * passados via queryString
  */
 use code\service\ProdutoService;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,14 +29,21 @@ $app->register(new \Silex\Provider\RoutingServiceProvider());
 
 
 
+
 $app['produtoService'] = function () use($em) {
-    $produto = new \code\entity\Produto();
-    $mapper = new \code\mapper\ProdutoMapper($em);
-    $service = new ProdutoService($produto, $mapper);
+    $service = new ProdutoService($em);
     return $service;
 };
 
+$app->get('/procurarPorNome/{nome}', function ($nome) use($app) {
+    $resultado = $app['produtoService']->procurarPorNome($nome);
+    return $app->json($resultado);
+});
 
+$app->get('/listaPaginada/{inicio}&{maximo}', function ($inicio, $maximo) use($app) {
+    $resultado = $app['produtoService']->listaPaginada($inicio, $maximo);
+    return $app->json($resultado);
+});
 
 $app->post('/api/produtos', function (Request $request) use($app) {
 
