@@ -32,6 +32,9 @@ class ProdutoService {
 
     public function alterarProduto(Produto $produto) {
         $produtoReference = $this->em->getReference(Produto::class, $produto->getId());
+        $produtoReference->setNome($produto->getNome());
+        $produtoReference->setDescricao($produto->getDescricao());
+        $produtoReference->setValor($produto->getValor());
         $result = $this->em->merge($produtoReference);
         $this->em->flush();
         $retorno['mensagem'] = ($result) ? 'Dados alterados com sucesso' : 'Erro ao alterar dados';
@@ -40,7 +43,7 @@ class ProdutoService {
 
     public function excluirProduto(Produto $produto) {
         $produtoReference = $this->em->getReference(Produto::class, $produto->getId());
-        $result = $this->em->detach($produtoReference);
+        $result = $this->em->remove($produtoReference);
         $retorno['mensagem'] = ($result) ? 'Dados excluídos com sucesso' : 'Erro ao excluir dados';
         return $retorno;
     }
