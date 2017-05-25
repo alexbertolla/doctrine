@@ -10,9 +10,11 @@ namespace code\entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\PrePersist;
 
 /**
  * @ORM\Entity(repositoryClass="code\entity\ProdutoRepository")
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="produtos")
  */
 class Produto {
@@ -54,8 +56,18 @@ class Produto {
      */
     public $tag;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    public $imagem;
+
     public function __construct() {
         $this->tag = new ArrayCollection();
+    }
+
+    /** @PrePersist */
+    function fileUpLoad() {
+        copy($_FILES["imagem"]["tmp_name"], './' . $_FILES["imagem"]["name"]);
     }
 
     function getId() {
@@ -100,6 +112,14 @@ class Produto {
 
     function setCategoria($categoria) {
         $this->categoria = $categoria;
+    }
+
+    function getImagem() {
+        return $this->imagem;
+    }
+
+    function setImagem($imagem) {
+        $this->imagem = $imagem;
     }
 
     function addTag($tag) {

@@ -25,8 +25,9 @@ class ProdutoService {
     }
 
     public function inserirProduto(Produto $produto) {
-        $result = $this->em->persist($produto);
-        $retorno['mensagem'] = ($result) ? 'Dados inseridos com sucesso' : 'Erro ao inserir dados';
+        $this->em->persist($produto);
+        $this->em->flush();
+        $retorno['mensagem'] = 'Dados inseridos com sucesso';
         return $retorno;
     }
 
@@ -37,7 +38,7 @@ class ProdutoService {
         $produtoReference->setValor($produto->getValor());
         $result = $this->em->merge($produtoReference);
         $this->em->flush();
-        $retorno['mensagem'] = ($result) ? 'Dados alterados com sucesso' : 'Erro ao alterar dados';
+        $retorno['mensagem'] = 'Dados alterados com sucesso';
         return $retorno;
     }
 

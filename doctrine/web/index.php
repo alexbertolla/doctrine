@@ -1,19 +1,10 @@
 <?php
 
 /**
- * Uma vez que você já possui uma API pública em funcionamento de seu produto, 
- * agora, você poderá categorizar todos os produtos da seguinte forma:
-
-  1) Um produto pode estar apenas em uma categoria
-  2) Um produto pode ter diversas tags para facilitar o processo de busca
-  3) As tags precisam constar em uma tabela de banco de dados
-
-  Também:
-
-  Crie as APIs REST para: Categorias e Tags (CRUD Completo).
-  No momento da inserção de um novo produto, a categoria do mesmo deverá ser
- * informada, bem como suas tags.
+ Utilize os conhecimentos adquiridos com os Eventos / Callbacks do Doctrine para fazer o upload de imagem de um produto.
  */
+
+
 use code\service\ProdutoService;
 use code\service\TagService;
 use code\service\CategoriaService;
@@ -52,7 +43,32 @@ $app['tagService'] = function () use($em) {
     $service = new TagService($em);
     return $service;
 };
+/*
+try {
+    $produto = new Produto();
+    $produto->setNome('PRODUTO');
+    $produto->setDescricao('DESCRICAO');
+    $produto->setValor(10);
+    $categoria = $app['categoriaService']->buscarPorId(1);
+    $produto->setCategoria($categoria);
 
+    $produto->setImagem($_FILES['imagem']['name']);
+    
+    $listaTag = explode(',', '1,2');
+    foreach ($listaTag as $tag) {
+        $produto->addTag($app['tagService']->buscarPorId($tag));
+    }
+
+    $msg = $app['produtoService']->inserirProduto($produto);
+
+    print_r($msg);
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+exit();
+
+
+*/
 
 $app->post('/api/categorias', function (Request $request) use($app) {
 
@@ -161,6 +177,8 @@ $app->post('/api/produtos', function (Request $request) use($app) {
     $produto->setNome($dados['nome']);
     $produto->setDescricao($dados['descricao']);
     $produto->setValor($dados['valor']);
+    
+    $produto->setImagem($_FILES['imagem']['name']);
 
 
 
